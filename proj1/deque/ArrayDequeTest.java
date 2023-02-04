@@ -76,5 +76,6 @@ public class ArrayDequeTest {
         String s = lld1.removeFirst();
         double d = lld2.removeFirst();
         boolean b = lld3.removeFirst();
+
     }
 }

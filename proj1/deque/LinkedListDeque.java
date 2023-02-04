@@ -1,10 +1,12 @@
 package deque;
 
+import java.util.Iterator;
+
 /**
  * @author superlit
  * @create 2023/1/16 16:06
  */
-public class LinkedListDeque<T> implements Deque<T> {
+public class LinkedListDeque<T> implements Deque<T>, Iterable<T>  {
     private class Node {
         T value;
         Node front, back;
@@ -33,7 +35,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         Node node = new Node(item, first, next);
         first.back = node;
         next.front = node;
-        size ++ ;
+        size += 1;
     }
 
     @Override
@@ -42,22 +44,12 @@ public class LinkedListDeque<T> implements Deque<T> {
         Node node = new Node(item, next, last);
         last.front = node;
         next.back = node;
-        size ++ ;
+        size += 1;
     }
 
     @Override
     public int size() {
         return size;
-    }
-
-    @Override
-    public void printDeque() {
-        Node temp = first.back;
-        for (int i = 0; i < size; i ++ ) {
-            System.out.print(temp.value + " ");
-            temp = temp.back;
-        }
-        System.out.println();
     }
 
     @Override
@@ -68,7 +60,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         T res = first.back.value;
         first.back = first.back.back;
         first.back.front = first;
-        size -- ;
+        size -= 1;
         return res;
     }
 
@@ -80,7 +72,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         T res = last.front.value;
         last.front = last.front.front;
         last.front.back = last;
-        size -- ;
+        size -= 1;
         return res;
     }
 
@@ -90,10 +82,57 @@ public class LinkedListDeque<T> implements Deque<T> {
             return null;
         }
         Node temp = first.back;
-        for (int i = 0; i < index; i ++ ) {
+        for (int i = 0; i < index; i += 1) {
             temp = temp.back;
         }
         return temp.value;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new LinkedListDequeIterator();
+    }
+
+    private class LinkedListDequeIterator implements Iterator<T> {
+        private int wizPos;
+
+        public LinkedListDequeIterator() {
+            wizPos = 0;
+        }
+
+        public boolean hasNext() {
+            return wizPos < size;
+        }
+
+        public T next() {
+            T returnItem = get(wizPos);
+            wizPos += 1;
+            return returnItem;
+        }
+    }
+
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if (other.getClass() != this.getClass()) {
+            return false;
+        }
+        ArrayDeque<T> o = (ArrayDeque<T>) other;
+        if (o.size() != this.size()) {
+            return false;
+        }
+        Iterator<T> iterator1 = iterator();
+        Iterator<T> iterator2 = o.iterator();
+        while (iterator2.hasNext() && iterator1.hasNext()) {
+            if (!iterator1.next().equals(iterator2.next())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** Same as get, but uses recursion. */
