@@ -139,10 +139,8 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (o.size() != this.size()) {
             return false;
         }
-        Iterator<T> iterator1 = this.iterator();
-        Iterator iterator2 = o.iterator();
-        while (iterator2.hasNext() && iterator1.hasNext()) {
-            if (!iterator1.next().equals(iterator2.next())) {
+        for (int i = 0; i < this.size(); i ++ ) {
+            if (!this.get(i).equals(o.get(i))) {
                 return false;
             }
         }
