@@ -53,6 +53,14 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T>  {
     }
 
     @Override
+    public void printDeque() {
+        for (int i = 0; i < size(); i += 1) {
+            System.out.print(get(i) + " ");
+        }
+        System.out.println();
+    }
+
+    @Override
     public T removeFirst() {
         if (size == 0) {
             return null;
