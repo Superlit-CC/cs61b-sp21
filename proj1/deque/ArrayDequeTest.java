@@ -82,11 +82,15 @@ public class ArrayDequeTest {
     public void equalsTest() {
         Deque<Integer> d1 = new ArrayDeque<>();
         Deque<Integer> d2 = new LinkedListDeque<>();
+        Deque<String> d3 = new LinkedListDeque<>();
         for (int i = 0; i < 100; i ++ ) {
             d1.addFirst(i);
             d2.addFirst(i);
+            d3.addFirst("HHHH");
         }
         assertEquals(true, d2.equals(d1));
         assertEquals(true, d1.equals(d2));
+        assertEquals(false, d1.equals(d3));
+        assertEquals(false, d2.equals(d3));
     }
 }
