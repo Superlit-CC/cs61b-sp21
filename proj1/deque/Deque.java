@@ -6,7 +6,7 @@ import java.util.Iterator;
  * @author superlit
  * @create 2023/1/16 16:10
  */
-public interface Deque<T>{
+public interface Deque<T> {
     /** Adds an item of type T to the front of the deque. You can assume that item is never null. */
     public void addFirst(T item);
     /** Adds an item of type T to the back of the deque. You can assume that item is never null. */

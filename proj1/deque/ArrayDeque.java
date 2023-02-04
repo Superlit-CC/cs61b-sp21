@@ -8,7 +8,7 @@ import java.util.Iterator;
  * @create 2023/1/16 19:21
  */
 public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
-    T[] items;
+    private T[] items;
     private int size, head, tail;
     private int wizPos;
     private static int RFACTOR = 2;
@@ -69,13 +69,13 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (size == 0) {
             return null;
         }
-        if ((size < items.length / 4) && (size >= 16)) {
-            resize(items.length / 4);
-        }
         head = (head - 1 + items.length) % items.length;
         T res = items[head];
         items[head] = null;
         size -= 1;
+        if ((size < items.length / 4) && (size >= 16)) {
+            resize(items.length / 4);
+        }
         return res;
     }
 
@@ -84,13 +84,13 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (size == 0) {
             return null;
         }
-        if ((size < items.length / 4) && (size >= 16)) {
-            resize(items.length / 4);
-        }
         tail = (tail + 1) % items.length;
         T res = items[tail];
         items[tail] = null;
         size -= 1;
+        if ((size < items.length / 4) && (size >= 16)) {
+            resize(items.length / 4);
+        }
         return res;
     }
 
@@ -120,7 +120,7 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         }
 
         public T next() {
-            T returnItem = items[wizPos];
+            T returnItem = get(wizPos);
             wizPos += 1;
             return returnItem;
         }
@@ -133,14 +133,14 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         if (other == null) {
             return false;
         }
-        if (other.getClass() != this.getClass()) {
+        if (!(other instanceof Deque)) {
             return false;
         }
-        ArrayDeque<T> o = (ArrayDeque<T>) other;
+        Deque<T> o = (Deque<T>) other;
         if (o.size() != this.size()) {
             return false;
         }
-        Iterator<T> iterator1 = iterator();
+        Iterator<T> iterator1 = this.iterator();
         Iterator<T> iterator2 = o.iterator();
         while (iterator2.hasNext() && iterator1.hasNext()) {
             if (!iterator1.next().equals(iterator2.next())) {

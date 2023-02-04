@@ -6,7 +6,7 @@ import java.util.Iterator;
  * @author superlit
  * @create 2023/1/16 16:06
  */
-public class LinkedListDeque<T> implements Deque<T>, Iterable<T>  {
+public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
     private class Node {
         T value;
         Node front, back;
@@ -126,14 +126,14 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T>  {
         if (other == null) {
             return false;
         }
-        if (other.getClass() != this.getClass()) {
+        if (!(other instanceof Deque)) {
             return false;
         }
-        ArrayDeque<T> o = (ArrayDeque<T>) other;
+        Deque<T> o = (Deque<T>) other;
         if (o.size() != this.size()) {
             return false;
         }
-        Iterator<T> iterator1 = iterator();
+        Iterator<T> iterator1 = this.iterator();
         Iterator<T> iterator2 = o.iterator();
         while (iterator2.hasNext() && iterator1.hasNext()) {
             if (!iterator1.next().equals(iterator2.next())) {
@@ -152,7 +152,9 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T>  {
     }
 
     private T recursive(int index, Node node) {
-        if (index == 0) return node.value;
+        if (index == 0) {
+            return node.value;
+        }
         return recursive(index - 1, node.back);
     }
 }

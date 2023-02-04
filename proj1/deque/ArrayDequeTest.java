@@ -76,6 +76,17 @@ public class ArrayDequeTest {
         String s = lld1.removeFirst();
         double d = lld2.removeFirst();
         boolean b = lld3.removeFirst();
+    }
 
+    @Test
+    public void equalsTest() {
+        Deque<Integer> d1 = new ArrayDeque<>();
+        Deque<Integer> d2 = new LinkedListDeque<>();
+        for (int i = 0; i < 100; i ++ ) {
+            d1.addFirst(i);
+            d2.addFirst(i);
+        }
+        assertEquals(true, d2.equals(d1));
+        assertEquals(true, d1.equals(d2));
     }
 }
