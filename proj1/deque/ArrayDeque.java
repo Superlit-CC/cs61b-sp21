@@ -10,7 +10,6 @@ import java.util.Iterator;
 public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private T[] items;
     private int size, head, tail;
-    private int wizPos;
     private static int RFACTOR = 2;
 
     public ArrayDeque() {
