@@ -1,0 +1,22 @@
+L = 30
+
+N = 10000
+class hashmap.MyHashMapALBuckets: 0.02 sec
+class hashmap.MyHashMapLLBuckets: 0.02 sec
+class hashmap.MyHashMapTSBuckets: 0.02 sec
+class hashmap.MyHashMapHSBuckets: 0.02 sec
+class hashmap.MyHashMapPQBuckets: 0.01 sec
+
+N = 100000
+class hashmap.MyHashMapALBuckets: 0.13 sec
+class hashmap.MyHashMapLLBuckets: 0.22 sec
+class hashmap.MyHashMapTSBuckets: 0.25 sec
+class hashmap.MyHashMapHSBuckets: 0.28 sec
+class hashmap.MyHashMapPQBuckets: 0.15 sec
+
+N = 1000000
+class hashmap.MyHashMapALBuckets: 1.91 sec
+class hashmap.MyHashMapLLBuckets: 2.31 sec
+class hashmap.MyHashMapTSBuckets: 2.96 sec
+class hashmap.MyHashMapHSBuckets: 5.31 sec
+class hashmap.MyHashMapPQBuckets: 2.31 sec

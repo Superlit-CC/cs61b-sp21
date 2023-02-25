@@ -205,25 +205,6 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /** returns an Iterator that iterates over the stored keys. */
     @Override
     public Iterator<K> iterator() {
-        return new MyHashMapIter();
+        return ks.iterator();
     }
-
-    private class MyHashMapIter implements Iterator<K> {
-        MyHashMapIter() {
-            iterator = ks.iterator();
-        }
-
-        @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
-        }
-
-        @Override
-        public K next() {
-            return iterator.next();
-        }
-
-        private Iterator<K> iterator;
-    }
-
 }
