@@ -60,5 +60,5 @@ clean:
 ### DEPENDENCIES ###
 
 sentinel: $(SRCS)
-	javac $(JFLAGS) -cp $(CPATH) $(SRCS)
+	javac -encoding UTF-8 $(JFLAGS) -cp $(CPATH) $(SRCS)
 	touch sentinel
