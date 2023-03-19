@@ -399,6 +399,8 @@ public class MainFunc {
             System.out.println("No such branch exists.");
             System.exit(0);
         }
+        // 修改当前分支
+        changeHead(Utils.join(Repository.HEADS, branchName).getPath());
         // 添加和删除文件
         for (Blob blob : saveBlobs) {
             blob.saveToCWD();

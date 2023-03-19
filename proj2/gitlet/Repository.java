@@ -42,4 +42,16 @@ public class Repository {
     public static final File ADD_STAGE = join(GITLET_DIR, "addstage");
     public static final File REMOVE_STAGE = join(GITLET_DIR, "removestage");
     public static final File HEAD = join(GITLET_DIR, "head");
+
+    /**
+     * 检验参数数量是否正确
+     * @param x 正确的数量
+     * @param y 实际的数量
+     */
+    public static void checkNumberOfArgs(int x, int y) {
+        if (y != x) {
+            System.out.println("Incorrect operands.");
+            System.exit(0);
+        }
+    }
 }
