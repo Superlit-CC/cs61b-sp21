@@ -58,13 +58,13 @@ public class Main {
                 MainFunc.status();
                 break;
             case "checkout":
-                if (args[1].length() == 1) {
+                if (args.length == 1) {
                     Repository.checkNumberOfArgs(2, args.length);
                 }
                 if (args[1].equals("--")) {
                     Repository.checkNumberOfArgs(3, args.length);
                     MainFunc.checkoutV1(args[2]);
-                } else if (args.length == 3) {
+                } else if (args.length == 4) {
                     if (!args[2].equals("--")) {
                         System.out.println("Incorrect operands.");
                         System.exit(0);
