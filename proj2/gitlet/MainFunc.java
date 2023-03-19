@@ -25,7 +25,7 @@ public class MainFunc {
      * automatically share this commit (they will all have the same UID) and
      * all commits in all repositories will trace back to it.
      */
-    public static void init() throws IOException {
+    public static void init() {
         if (Repository.GITLET_DIR.exists()) {
             System.out.println("A Gitlet version-control system already exists in the current directory.");
             System.exit(0);
