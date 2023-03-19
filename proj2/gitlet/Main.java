@@ -26,6 +26,7 @@ public class Main {
             case "add":
                 // TODO: handle the `add [filename]` command
                 Repository.checkNumberOfArgs(2, args.length);
+                Repository.checkGitlet();
                 MainFunc.add(args[1]);
                 break;
             // TODO: FILL THE REST IN
@@ -35,43 +36,48 @@ public class Main {
                     System.exit(0);
                 }
                 Repository.checkNumberOfArgs(2, args.length);
+                Repository.checkGitlet();
                 MainFunc.commit(args[1]);
                 break;
             case "rm":
                 Repository.checkNumberOfArgs(2, args.length);
+                Repository.checkGitlet();
                 MainFunc.rm(args[1]);
                 break;
             case "log":
                 Repository.checkNumberOfArgs(1, args.length);
+                Repository.checkGitlet();
                 MainFunc.log();
                 break;
             case "global-log":
                 Repository.checkNumberOfArgs(1, args.length);
+                Repository.checkGitlet();
                 MainFunc.global_log();
                 break;
             case "find":
                 Repository.checkNumberOfArgs(2, args.length);
+                Repository.checkGitlet();
                 MainFunc.find(args[1]);
                 break;
             case "status":
                 Repository.checkNumberOfArgs(1, args.length);
+                Repository.checkGitlet();
                 MainFunc.status();
                 break;
             case "checkout":
                 if (args.length == 1) {
                     Repository.checkNumberOfArgs(2, args.length);
                 }
+                // 如果第二个参数为"--"，就认为是v1
                 if (args[1].equals("--")) {
                     Repository.checkNumberOfArgs(3, args.length);
+                    Repository.checkGitlet();
                     MainFunc.checkoutV1(args[2]);
-                } else if (args.length == 4) {
-                    if (!args[2].equals("--")) {
-                        System.out.println("Incorrect operands.");
-                        System.exit(0);
-                    }
+                } else if (args.length >= 3 && args[2].equals("--")) {  // 长度大于2，且第三个参数为"--"，就认为是v2
+                    Repository.checkGitlet();
                     MainFunc.checkoutV2(args[1], args[3]);
-                } else {
-                    Repository.checkNumberOfArgs(2, args.length);
+                } else {  // 其它情况都认为是v3
+                    Repository.checkGitlet();
                     MainFunc.checkoutV3(args[1]);
                 }
                 break;

@@ -45,12 +45,24 @@ public class Repository {
 
     /**
      * 检验参数数量是否正确
+     * 如果实际数量小于正确的数量，则打印异常，退出程序
      * @param x 正确的数量
      * @param y 实际的数量
      */
     public static void checkNumberOfArgs(int x, int y) {
-        if (y != x) {
+        if (y < x) {
             System.out.println("Incorrect operands.");
+            System.exit(0);
+        }
+    }
+
+    /**
+     * 检验目前工作区中是否包含.gitlet文件夹
+     * 如果不包含则打印异常，退出程序
+     */
+    public static void checkGitlet() {
+        if (!GITLET_DIR.exists()) {
+            System.out.println("Not in an initialized Gitlet directory.");
             System.exit(0);
         }
     }
