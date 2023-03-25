@@ -1,7 +1,5 @@
 package gitlet;
 
-// TODO: any imports you need here
-
 import java.io.File;
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -21,8 +19,6 @@ public class Commit implements Serializable {
 
     /** The message of this Commit. */
     private String message;
-
-    /* TODO: fill in the rest of this class. */
     private Date date;
     // LinkedHashMap 保证按照输入顺序输出，不然调用toString会发生改变
     private Map<String, String> pathToBlobID = new LinkedHashMap<>();
@@ -39,6 +35,22 @@ public class Commit implements Serializable {
         for (Commit parent : parents) {
             this.parents.add(parent);
         }
+    }
+
+    /** 根据head获取当前commit */
+    public static Commit getCurrentCommit() {
+        String head = Utils.readContentsAsString(Repository.HEAD);
+        String commitName = Utils.readContentsAsString(new File(head));
+        return Utils.readObject(Utils.join(Repository.COMMITS, commitName), Commit.class);
+    }
+
+    /** 获取指定commit id的commit，如果没有，返回null */
+    public static Commit getCommit(String commitID) {
+        File commitFile = Utils.join(Repository.COMMITS, commitID);
+        if (commitFile.exists()) {
+            return Utils.readObject(commitFile, Commit.class);
+        }
+        return null;
     }
 
     public String getMessage() {
@@ -80,29 +92,15 @@ public class Commit implements Serializable {
         return pathToBlobID.get(fileName);
     }
 
-    /** 根据head获取当前commit */
-    public static Commit getCurrentCommit() {
-        String head = Utils.readContentsAsString(Repository.HEAD);
-        String commitName = Utils.readContentsAsString(new File(head));
-        return Utils.readObject(Utils.join(Repository.COMMITS, commitName), Commit.class);
-    }
-
-    /** 添加blobID */
+    /** 往pathToBlobID添加blobID */
     public void addBlobs(Map<String, String> addBlobs) {
         pathToBlobID.putAll(addBlobs);
     }
 
-    /** 删除blobsID */
+    /** 从pathToBlobID删除blobID */
     public void removeBlobs(Map<String, String> removeBlobs) {
         for (Map.Entry<String, String> entry : removeBlobs.entrySet()) {
             pathToBlobID.remove(entry.getKey());
-        }
-    }
-
-    /** 删除blobs ID */
-    public void removeBlobs(String... fileNames) {
-        for (String fileName : fileNames) {
-            pathToBlobID.remove(fileName);
         }
     }
 
@@ -126,7 +124,7 @@ public class Commit implements Serializable {
         return Utils.sha1(this.toString());
     }
 
-    /** 根据所给格式打印出commit */
+    /** 根据log格式打印commit信息 */
     public void displayLog() {
         System.out.println("===");
         System.out.println("commit " + this.getCommitID());
@@ -144,25 +142,9 @@ public class Commit implements Serializable {
         System.out.println(this.getMessage() + "\n");
     }
 
-    /** 获取所需时间格式 */
-    private String getTimestamp() {
-        // Thu Jan 01 08:00:00 1970 +0800
-        DateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z", Locale.ENGLISH);
-        return dateFormat.format(date);
-    }
-
     /** 获取当前commit追踪的所有文件名 */
     public Set<String> getAllFilesSet() {
         return pathToBlobID.keySet();
-    }
-
-    /** 获取指定commit id的commit，如果没有，返回null */
-    public static Commit getCommit(String commitID) {
-        File commitFile = Utils.join(Repository.COMMITS, commitID);
-        if (commitFile.exists()) {
-            return Utils.readObject(commitFile, Commit.class);
-        }
-        return null;
     }
 
     /** 根据文件名，获取该commit下的blob。如果没有，返回null */
@@ -175,8 +157,10 @@ public class Commit implements Serializable {
         return Blob.readBlob(blobID);
     }
 
-    /** 获取所有blobs */
-    public Collection<String> getAllBlobsID() {
-        return pathToBlobID.values();
+    /** 获取所需时间格式 */
+    private String getTimestamp() {
+        // Thu Jan 01 08:00:00 1970 +0800
+        DateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z", Locale.ENGLISH);
+        return dateFormat.format(date);
     }
 }

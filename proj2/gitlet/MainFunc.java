@@ -52,11 +52,6 @@ public class MainFunc {
         }
     }
 
-    /** 将当前head指针指向改为指定headPath */
-    private static void changeHead(String headPath) {
-        Utils.writeContents(Repository.HEAD, headPath);
-    }
-
     /**
      * Adds a copy of the file as it currently exists to the staging area (see the
      * description of the commit command). For this reason, adding a file is also
@@ -92,15 +87,6 @@ public class MainFunc {
             removeStage.remove(fileName);
         }
         removeStage.saveRemoveStage();
-    }
-
-    /**
-     * 根据文件名从当前工作目录中生成File
-     * @param fileName
-     * @return File
-     */
-    private static File getFile(String fileName) {
-        return Utils.join(Repository.CWD, fileName);
     }
 
     /**
@@ -303,28 +289,6 @@ public class MainFunc {
     }
 
     /**
-     * 获取当前commit中没有跟踪的文件
-     * @return
-     */
-    private static List<String> getUntrackedFiles() {
-        List<String> result = new ArrayList<>();
-        Commit currentCommit = Commit.getCurrentCommit();
-        Stage addStage = Stage.readAddStage();
-        Stage removeStage = Stage.readRemoveStage();
-        // 分两种情况（不考虑工作区的子目录）
-        // 1. commit和add stage中都没有
-        // 2. remove stage中有，但工作区中也有
-        for (String fileName : Utils.plainFilenamesIn(Repository.CWD)) {
-            File file = getFile(fileName);
-            if ((currentCommit.getBlobID(fileName) == null && addStage.getBlobID(fileName) == null) ||
-                    (removeStage.getBlobID(fileName) != null && file.exists())) {
-                result.add(fileName);
-            }
-        }
-        return result;
-    }
-
-    /**
      * Checkout Version 1
      * checkout -- [file name]
      * Takes the version of the file as it exists in the head commit and
@@ -409,62 +373,6 @@ public class MainFunc {
     }
 
     /**
-     * 异常检查：There is an untracked file in the way; delete it, or add and commit it first.
-     * @param commitID
-     */
-    private static void checkUntrackedFiles(String commitID) {
-        List<String> untrackedFiles = getUntrackedFiles();
-        Commit commit = Commit.getCommit(commitID);
-        for (String fileName : untrackedFiles) {
-            if (commit.getBlobID(fileName) != null) {
-                // 被commit追踪且没有被当前分支追踪，报异常
-                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
-                System.exit(0);
-            }
-        }
-    }
-
-    /**
-     * 将工作目录回滚到指定commit id
-     * 不包括了文件的异常处理
-     * @param commitID
-     */
-    private static void rollbackToCommit(String commitID) {
-        // 处理该commit id下的文件
-        // 1. 获取commit id和当前commit
-        Commit commit = Commit.getCommit(commitID);
-        // 2. commit中的追踪的文件，添加
-        for (Map.Entry<String, String> pathToBlobID : commit.getPathToBlobID().entrySet()) {
-            Blob blob = Blob.readBlob(pathToBlobID.getValue());
-            blob.saveToCWD(pathToBlobID.getKey());
-        }
-        // 3. 不被指定commit追踪的文件，删除
-        for (String fileName : Utils.plainFilenamesIn(Repository.CWD)) {
-            if (commit.getBlobID(fileName) == null) {
-                getFile(fileName).delete();
-            }
-        }
-    }
-
-    /**
-     * 返回指定分支名的File
-     * @param branchName
-     * @return File
-     */
-    private static File getBranchFile(String branchName) {
-        File branch = Utils.join(Repository.HEADS, branchName);
-        return branch;
-    }
-
-    /**
-     * 获取当前分支名
-     * @return String
-     */
-    private static String getCurrentBranchName() {
-        return getCurrentBranchFile().getName();
-    }
-
-    /**
      * Creates a new branch with the given name, and points it at the current
      * head commit. A branch is nothing more than a name for a reference
      * (a SHA-1 identifier) to a commit node. This command does NOT immediately
@@ -508,23 +416,6 @@ public class MainFunc {
         }
         // 3. 删除该分支HEADS下的文件
         branch.delete();
-    }
-
-    /**
-     * 获取当前分支的绝对路径
-     * @return String
-     */
-    private static String getCurrentBranchAbsolutePath() {
-        return Utils.readContentsAsString(Repository.HEAD);
-    }
-
-    /**
-     * 获取当前分支
-     * @return File
-     */
-    private static File getCurrentBranchFile() {
-        String head = getCurrentBranchAbsolutePath();
-        return new File(head);
     }
 
     /**
@@ -672,6 +563,12 @@ public class MainFunc {
         }
     }
 
+    /**
+     * 处理冲突，返回合并两个Blobs内容后的Blob
+     * @param headBlobID 当前分支指向的blobID
+     * @param otherBlobID 合并分支指向的blobID
+     * @return Blob
+     */
     private static Blob resolveConflict(String headBlobID, String otherBlobID) {
         byte[] b1 = "<<<<<<< HEAD\n".getBytes();
         byte[] b2 = "=======\n".getBytes();
@@ -767,6 +664,118 @@ public class MainFunc {
             }
         }
         return result;
+    }
+
+    /**
+     * 将当前head指针指向改为指定headPath
+     * @param headPath
+     */
+    private static void changeHead(String headPath) {
+        Utils.writeContents(Repository.HEAD, headPath);
+    }
+
+    /**
+     * 根据文件名从当前工作目录中生成File
+     * @param fileName 文件名
+     * @return File
+     */
+    private static File getFile(String fileName) {
+        return Utils.join(Repository.CWD, fileName);
+    }
+
+    /**
+     * 获取当前commit中没有跟踪的文件
+     * @return List<String>
+     */
+    private static List<String> getUntrackedFiles() {
+        List<String> result = new ArrayList<>();
+        Commit currentCommit = Commit.getCurrentCommit();
+        Stage addStage = Stage.readAddStage();
+        Stage removeStage = Stage.readRemoveStage();
+        // 分两种情况（不考虑工作区的子目录）
+        // 1. commit和add stage中都没有
+        // 2. remove stage中有，但工作区中也有
+        for (String fileName : Utils.plainFilenamesIn(Repository.CWD)) {
+            File file = getFile(fileName);
+            if ((currentCommit.getBlobID(fileName) == null && addStage.getBlobID(fileName) == null) ||
+                    (removeStage.getBlobID(fileName) != null && file.exists())) {
+                result.add(fileName);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 异常检查：There is an untracked file in the way; delete it, or add and commit it first.
+     * @param commitID
+     */
+    private static void checkUntrackedFiles(String commitID) {
+        List<String> untrackedFiles = getUntrackedFiles();
+        Commit commit = Commit.getCommit(commitID);
+        for (String fileName : untrackedFiles) {
+            if (commit.getBlobID(fileName) != null) {
+                // 被commit追踪且没有被当前分支追踪，报异常
+                System.out.println("There is an untracked file in the way; delete it, or add and commit it first.");
+                System.exit(0);
+            }
+        }
+    }
+
+    /**
+     * 将工作目录回滚到指定commit id
+     * 不包括了文件的异常处理
+     * @param commitID
+     */
+    private static void rollbackToCommit(String commitID) {
+        // 处理该commit id下的文件
+        // 1. 获取commit id和当前commit
+        Commit commit = Commit.getCommit(commitID);
+        // 2. commit中的追踪的文件，添加
+        for (Map.Entry<String, String> pathToBlobID : commit.getPathToBlobID().entrySet()) {
+            Blob blob = Blob.readBlob(pathToBlobID.getValue());
+            blob.saveToCWD(pathToBlobID.getKey());
+        }
+        // 3. 不被指定commit追踪的文件，删除
+        for (String fileName : Utils.plainFilenamesIn(Repository.CWD)) {
+            if (commit.getBlobID(fileName) == null) {
+                getFile(fileName).delete();
+            }
+        }
+    }
+
+    /**
+     * 返回指定分支名的File
+     * @param branchName
+     * @return File
+     */
+    private static File getBranchFile(String branchName) {
+        File branch = Utils.join(Repository.HEADS, branchName);
+        return branch;
+    }
+
+    /**
+     * 获取当前分支名
+     * @return String
+     */
+    private static String getCurrentBranchName() {
+        return getCurrentBranchFile().getName();
+    }
+
+    /**
+     * 获取当前分支的绝对路径
+     * @return String
+     */
+    private static String getCurrentBranchAbsolutePath() {
+        return Utils.readContentsAsString(Repository.HEAD);
+    }
+
+    /**
+     * 获取当前分支
+     * @return File
+     */
+    private static File getCurrentBranchFile() {
+        String head = getCurrentBranchAbsolutePath();
+        return new File(head);
     }
 }
 

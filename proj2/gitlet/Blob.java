@@ -43,7 +43,7 @@ public class Blob implements Serializable {
         Utils.writeContents(file, content);
     }
 
-    /** 根据给定的blob id去读取blob，如果没有报错 */
+    /** 根据给定的blob id去读取blob，如果没有就报错 */
     public static Blob readBlob(String blobID) {
         return Utils.readObject(Utils.join(Repository.BLOBS, blobID), Blob.class);
     }
