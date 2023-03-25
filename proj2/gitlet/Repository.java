@@ -27,6 +27,8 @@ public class Repository {
 
     /** The current working directory. */
     public static final File CWD = new File(System.getProperty("user.dir"));
+    /** 临时的CWD，用来测试。*/
+//    public static final File CWD = Utils.join(new File(System.getProperty("user.dir")), "test");
     /** The .gitlet directory. */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
 

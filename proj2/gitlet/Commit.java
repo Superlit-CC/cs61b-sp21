@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -15,8 +14,6 @@ import java.util.*;
  */
 public class Commit implements Serializable {
     /**
-     * TODO: add instance variables here.
-     *
      * List all instance variables of the Commit class here with a useful
      * comment above them describing what that variable represents and how that
      * variable is used. We've provided one example for `message`.
@@ -27,7 +24,8 @@ public class Commit implements Serializable {
 
     /* TODO: fill in the rest of this class. */
     private Date date;
-    private Map<String, String> pathToBlobID = new HashMap<>();
+    // LinkedHashMap 保证按照输入顺序输出，不然调用toString会发生改变
+    private Map<String, String> pathToBlobID = new LinkedHashMap<>();
     private List<Commit> parents = new ArrayList<>();
 
     public Commit() {
@@ -51,8 +49,20 @@ public class Commit implements Serializable {
         return date;
     }
 
+    /**
+     * 返回当前commit的父节点集，如果是initial commit，则返回空的List。
+     * @return List<Commit>
+     */
     public List<Commit> getParents() {
         return parents;
+    }
+
+    /**
+     * 返回当前commit的追踪的文件名和blobs的映射，如果没有，则返回空的Map。
+     * @return Map<String, String>
+     */
+    public Map<String, String> getPathToBlobID() {
+        return pathToBlobID;
     }
 
     @Override
@@ -60,7 +70,7 @@ public class Commit implements Serializable {
         return "Commit{" +
                 "message='" + message + '\'' +
                 ", date=" + date +
-                ", blobID=" + pathToBlobID +
+                ", pathToBlobID=" + pathToBlobID.toString() +
                 ", parents=" + parents +
                 '}';
     }
@@ -125,6 +135,7 @@ public class Commit implements Serializable {
         if (parents.size() > 1) {
             System.out.println("Merge: " +
                     parents.get(0).getCommitID().substring(0, 7) +
+                    " " +
                     parents.get(1).getCommitID().substring(0, 7));
         }
         // 输出date信息
@@ -147,10 +158,9 @@ public class Commit implements Serializable {
 
     /** 获取指定commit id的commit，如果没有，返回null */
     public static Commit getCommit(String commitID) {
-        for (String c : Utils.plainFilenamesIn(Repository.COMMITS)) {
-            if (c.equals(commitID)) {
-                return Utils.readObject(Utils.join(Repository.COMMITS, commitID), Commit.class);
-            }
+        File commitFile = Utils.join(Repository.COMMITS, commitID);
+        if (commitFile.exists()) {
+            return Utils.readObject(commitFile, Commit.class);
         }
         return null;
     }

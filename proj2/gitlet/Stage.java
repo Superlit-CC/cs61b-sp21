@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,7 +11,7 @@ import java.util.Set;
  * @create 2023/3/16 22:21
  */
 public class Stage implements Serializable {
-    private Map<String, String> pathToBlobID = new HashMap<>();  // fileName -> blobsID
+    private Map<String, String> pathToBlobID = new LinkedHashMap<>();  // fileName -> blobsID
 
     /** 将blob添加到stage中*/
     public void add(String fileName, String blobID) {
